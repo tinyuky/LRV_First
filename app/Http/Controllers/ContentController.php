@@ -7,6 +7,10 @@ use App\User;
 
 class ContentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:admin');
+    }
     public function search(Request $search){
     	if($search->search==null){
     		$users	 = User::paginate(5);
