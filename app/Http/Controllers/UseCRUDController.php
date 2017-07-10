@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-
+use Session;
 
 class UseCRUDController extends Controller
 {
@@ -52,6 +52,8 @@ class UseCRUDController extends Controller
             'password' => 'required|string|min:6|confirmed',
             ));
 
+
+
         //save
         User::create([
             'username' => $request['username'],
@@ -61,9 +63,9 @@ class UseCRUDController extends Controller
             'password' => bcrypt($request['password']),
             ]);
 
-        $user = User::where('email',$request->email)->first();
+         Session::flash('flash_message', 'Create new user successfully!');
         //redirect
-        return redirect()->route('admin.home');
+        return redirect()->route('admin.home')->with('status', 'User added!');
 
     }
 
@@ -104,16 +106,15 @@ class UseCRUDController extends Controller
         $user = User::find($id);
         $data = $request->all();
         $this ->validate($request,[
-            'username' => 'string|max:255',
-            'firstname' => 'string|max:255',
-            'lastname' => 'string|max:255',
-            'password' => 'required|string|min:6',
+            'username' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
             ]);
         Validator::make($data, [
             'email' => [
-                'required',
-                Rule::unique('users')->ignore($user->id),
-                ],
+            'required',
+            Rule::unique('users')->ignore($user->id),
+            ],
             ]);
 
         $user = User::find($id);
@@ -121,10 +122,15 @@ class UseCRUDController extends Controller
         $user->firstname = $request->input('firstname');
         $user->lastname = $request->input('lastname');
         $user->email = $request->input('email');
-        $user->password = bcrypt($request->input('password'));
+        if($request->password!=null){
+            $this->validate($request,[
+                'password' => 'string|min:6',
+                ]);
+            $user->password = bcrypt($request->input('password'));
+        }       
         $user->save();
-
-        return redirect()->route('admin.home');
+        //Session::flash('flash_message', 'Update user successfully!');
+        return redirect()->route('admin.home')->with('status', 'User updated!');
     }
 
     /**
@@ -137,6 +143,6 @@ class UseCRUDController extends Controller
     {
         $user = User::find($id);
         $user->delete();
-        return redirect()->route('admin.home');
+        return redirect()->route('admin.home')->with('status', 'User deleted!');
     }
 }
