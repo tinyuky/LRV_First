@@ -18,13 +18,10 @@ class ContentController extends Controller
     	}
     	else{
     		$str = str_replace('%40', '@', $search->search);
-    		$users	 = User::where('username','like',$str)
-    					->orwhere('firstname','like',$str)
-    						->orwhere('email','like',$str)->paginate(5);
+    		$users	 = User::where('username','like','%'.$str.'%')
+    					->orwhere('firstname','like','%'.$str.'%')
+    						->orwhere('email','like','%'.$str.'%')->sortable()->paginate(2);
          	return view('adminhome',['posts'=>$users]);
     	}
-         
-        //Session:flash('thong bao','ngon roi');
-
     }
 }

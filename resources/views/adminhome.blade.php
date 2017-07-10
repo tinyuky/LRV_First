@@ -19,10 +19,11 @@
                 <br>
                 <br>
                 <br>
+
                 <table class="table">
                     <thead>
                         <th>Id</th>
-                        <th>Username</th>
+                        <th>@sortablelink('username', 'Username')</th>
                         <th>Firstname</th>
                         <th>Lastname</th>
                         <th>Email</th>
@@ -45,8 +46,8 @@
                         @endforeach
                     </tbody>
                 </table>
-                <div class="text-center">
-                    {{ $posts->links() }}
+                <div class="text-center">                   
+                    {!! $posts->appends(\Request::except('page'))->render() !!}
                 </div>
             </dir>
 
